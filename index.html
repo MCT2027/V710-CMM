@@ -826,28 +826,36 @@ const _persist=persist;persist=function(k){const r=_persist(k);clDirty();return 
 <div class="fr" style="margin:6px 0;align-items:center"><button id="clp">Tải dữ liệu cloud ngay</button></div>
 <div class="sub" style="margin:8px 0 2px"><b>Chỉ PC xưởng cần cài phần dưới</b> (máy chỉ xem thì bỏ qua)</div>
 <div class="fr" style="margin:6px 0;align-items:center"><label>Kho GitHub (owner/repo) <input id="clr" size="26"></label><label>Token <input id="clt" type="password" size="26" placeholder="github_pat_..."></label><button id="cls2">Lưu</button><button id="clh">Đẩy lên cloud ngay</button></div>
-<div class="fr" style="margin:6px 0;align-items:center"><button id="wpick">Chọn thư mục ổ chung</button><label>Chỉ lấy file sửa từ ngày <input type="date" id="wsd"></label><span class="sub" id="wdn"></span></div>
-<div class="sub" id="wst"></div></div>`;const up=$('up');up.parentNode.insertBefore(d,up.nextSibling);
+<div class="fr" style="margin:6px 0;align-items:center"><button id="wpick">Thêm thư mục ổ chung</button><button id="wgr">Cấp lại quyền</button><label>Chỉ lấy file sửa từ ngày <input type="date" id="wsd"></label></div>
+<div class="sub" id="wdn"></div><div class="sub" id="wst"></div></div>`;const up=$('up');up.parentNode.insertBefore(d,up.nextSibling);
 $('clr').value=CL.repo();$('clt').value=CL.tok()?'••••••••':'';const x=new Date(Date.now()-7*864e5);$('wsd').value=localStorage.getItem('v710_cl_sd')||x.toISOString().slice(0,10);
 $('wsd').onchange=()=>localStorage.setItem('v710_cl_sd',$('wsd').value);
 $('clp').onclick=()=>clPull(1);$('clh').onclick=clPush;
 $('cls2').onclick=()=>{const r=$('clr').value.trim(),t=$('clt').value.trim();if(r)localStorage.setItem('v710_cl_repo',r);if(t&&!/^•+$/.test(t))localStorage.setItem('v710_cl_tok',t);$('clt').value=CL.tok()?'••••••••':'';clSay('Đã lưu cấu hình')};
 clSay(CL.st||(CL.repo()?'Kho: '+CL.repo():'Chưa xác định kho (mở link GitHub Pages hoặc nhập owner/repo)'))})();
-/* Quét thư mục ổ chung (Chrome/Edge trên PC xưởng) */
+/* Quét nhiều thư mục ổ chung (Chrome/Edge trên PC xưởng) */
 const IDB=(m,f)=>new Promise((ok,no)=>{const o=indexedDB.open('v710cl',1);o.onupgradeneeded=()=>o.result.createObjectStore('h');o.onsuccess=()=>{const t=o.result.transaction('h',m),s=t.objectStore('h'),q=f(s);t.oncomplete=()=>ok(q.result);t.onerror=()=>no(t.error)};o.onerror=()=>no(o.error)});
-let DIRH=null,WT=0,WB=0;
+let DIRS=[],WT=0,WB=0;
 const seenK=()=>{try{return new Set(JSON.parse(localStorage.getItem('v710_cl_seen')||'[]'))}catch(e){return new Set()}};
+const wSave=()=>IDB('readwrite',s=>s.put(DIRS,'dirs')).catch(()=>{});
+const wList=()=>{$('wdn').innerHTML=DIRS.length?'Đang theo dõi: '+DIRS.map((h,i)=>`<span style="display:inline-block;margin:2px 10px 2px 0">${esc(h.name)} <button data-x="${i}" title="Bỏ thư mục này">✕</button></span>`).join(''):'Chưa chọn thư mục nào'};
 async function* walk(h,d=0){for await(const[n,e]of h.entries()){if(e.kind=='file'){if(/\.(xlsm|xlsx|xls|xlsb|csv|txt|tsv)$/i.test(n)&&!/^~\$/.test(n))yield e}else if(d<3)yield* walk(e,d+1)}}
-async function wScan(){if(WB||!DIRH)return;WB=1;const since=+new Date(($('wsd').value||'1970-01-01')+'T00:00:00'),seen=seenK();let n=0,err=0,out=[];
-try{if(await DIRH.queryPermission({mode:'read'})!=='granted'){$('wst').textContent='Cần cấp lại quyền đọc thư mục: bấm "Chọn thư mục ổ chung"';WB=0;return}
-for await(const fh of walk(DIRH)){try{const f=await fh.getFile(),key=fh.name+'|'+f.size+'|'+f.lastModified;if(seen.has(key)||f.lastModified<since||Date.now()-f.lastModified<20000)continue;
-LAST=null;const m=await upd(f);seen.add(key);n++;out.push('✓ '+f.name+': '+m)}catch(x){err++;out.push('✗ '+fh.name+': '+x.message)}}
+async function wScan(){if(WB||!DIRS.length)return;WB=1;const since=+new Date(($('wsd').value||'1970-01-01')+'T00:00:00'),seen=seenK();let n=0,err=0,out=[],lock=[];
+try{for(const H of DIRS){if(await H.queryPermission({mode:'read'})!=='granted'){lock.push(H.name);continue}
+for await(const fh of walk(H)){let f,key;try{f=await fh.getFile();key=H.name+'/'+fh.name+'|'+f.size+'|'+f.lastModified}catch(x){err++;continue}
+if(seen.has(key)||f.lastModified<since||Date.now()-f.lastModified<20000)continue;
+try{LAST=null;const m=await upd(f);seen.add(key);n++;out.push('✓ '+f.name+': '+m)}catch(x){seen.add(key);err++;out.push('✗ '+f.name+': '+x.message)}}}
 localStorage.setItem('v710_cl_seen',JSON.stringify([...seen].slice(-3000)));
 if(n){if(LAST){setP(LAST.k);st.mc=LAST.mc;stdV()}render();ust();$('us').innerHTML+='<br>'+out.join('<br>');clDirty()}
-$('wst').textContent='Quét lúc '+new Date().toLocaleTimeString('vi-VN')+' · '+n+' file mới'+(err?' · '+err+' lỗi':'')}catch(e){$('wst').textContent='Lỗi quét: '+e.message}WB=0}
-async function wStart(h){DIRH=h;clearInterval(WT);WT=setInterval(wScan,60000);$('wdn').textContent='Đang theo dõi: '+h.name;wScan()}
-$('wpick').onclick=async()=>{if(!window.showDirectoryPicker){$('wst').textContent='Trình duyệt không hỗ trợ (dùng Chrome/Edge trên PC)';return}try{const h=await showDirectoryPicker({mode:'read'});await IDB('readwrite',s=>s.put(h,'dir'));wStart(h)}catch(e){}};
-(async()=>{try{if(!window.indexedDB||!window.showDirectoryPicker)return;const h=await IDB('readonly',s=>s.get('dir'));if(h){DIRH=h;$('wdn').textContent='Thư mục đã chọn: '+h.name+' (bấm "Chọn thư mục ổ chung" nếu cần cấp lại quyền)';if(await h.queryPermission({mode:'read'})==='granted')wStart(h)}}catch(e){}})();
+$('wst').textContent='Quét lúc '+new Date().toLocaleTimeString('vi-VN')+' · '+n+' file mới'+(err?' · '+err+' lỗi/bỏ qua':'')+(lock.length?' · CẦN CẤP LẠI QUYỀN: '+lock.join(', ')+' (bấm "Cấp lại quyền")':'')}catch(e){$('wst').textContent='Lỗi quét: '+e.message}WB=0}
+const wRun=()=>{clearInterval(WT);if(DIRS.length){WT=setInterval(wScan,60000);wScan()}};
+$('wpick').onclick=async()=>{if(!window.showDirectoryPicker){$('wst').textContent='Trình duyệt không hỗ trợ (dùng Chrome/Edge trên PC)';return}
+try{const h=await showDirectoryPicker({mode:'read'});for(const d of DIRS)if(await d.isSameEntry(h)){$('wst').textContent='Thư mục này đã có trong danh sách';return}
+DIRS.push(h);await wSave();wList();wRun()}catch(e){}};
+$('wgr').onclick=async()=>{try{for(const h of DIRS)await h.requestPermission({mode:'read'})}catch(e){}wRun()};
+$('wdn').onclick=async e=>{const b=e.target.closest('button[data-x]');if(!b)return;DIRS.splice(+b.dataset.x,1);await wSave();wList();wRun()};
+(async()=>{try{wList();if(!window.indexedDB||!window.showDirectoryPicker)return;let a=await IDB('readonly',s=>s.get('dirs'));if(!a||!a.length){const o=await IDB('readonly',s=>s.get('dir'));a=o?[o]:[]}
+DIRS=a;wList();if(DIRS.length)wRun()}catch(e){}})();
 /* Sau khi up file thủ công cũng đẩy lên cloud */
 const _uf=$('uf').onchange;$('uf').onchange=async e=>{await _uf.call($('uf'),e);clDirty()};
 
