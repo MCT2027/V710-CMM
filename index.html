@@ -422,7 +422,7 @@ const cov=new Set();P.CH.forEach(c=>c.s.forEach(p=>{const d=P.CD[p];if(d)cov.add
 (P.d8||[]).forEach(p=>{const d=P.CD[p];if(d)cov.add(d.r)});
 const out=[],okN=v=>typeof v=='number'&&isFinite(v);
 P.G.forEach(g=>{const m=new Map();
-g.d.forEach(i=>{const d=P.dims[i];if(!d||cov.has(d.r)||!okN(d.lo)||!okN(d.hi)||d.hi===d.lo)return;
+g.d.forEach(i=>{const d=P.dims[i];if(!d||ISM(d)||cov.has(d.r)||!okN(d.lo)||!okN(d.hi)||d.hi===d.lo)return;
 const k=d.nom+'|'+d.lo+'|'+d.hi;if(!m.has(k))m.set(k,[]);m.get(k).push(i)});
 m.forEach(ix=>{const d=P.dims[ix[0]];out.push({t:g.t+' · '+d.lo+'…'+d.hi,ix,nom:okN(d.nom)?d.nom:(d.lo+d.hi)/2,lo:d.lo,hi:d.hi,x:g.x?1:0})})});
 return out}
@@ -575,10 +575,10 @@ function fixHide(P){for(let i=P.CH.length-1;i>=0;i--)if(HIDECH.includes(P.CH[i].
 /* Rear: spec Ø10.2 bóp lại 10.15~10.25 (spec bản vẽ 10.13~10.23) */
 const LIMFIX={'Kích thước Ø10.2':[10.15,10.25]};
 function fixLim(P){if(!/rear/i.test(P.label))return;Object.keys(LIMFIX).forEach(t=>{const [lo,hi]=LIMFIX[t],g=P.G.find(x=>x.t===t);if(!g)return;const ix=new Set(g.d),rs=new Set();g.d.forEach(i=>{const d=P.dims[i];d.lo=lo;d.hi=hi;rs.add(d.r)});P.CD.forEach(c=>{if(rs.has(c.r)){c.lo=lo;c.hi=hi}});P.CH.forEach(c=>{if(c.t===t){c.lo=lo;c.hi=hi}});P.S.forEach(s=>{const ng=s[5].filter(i=>!ix.has(i));g.d.forEach(i=>{const v=s[6][i];if(v!=null&&(v<lo-1e-9||v>hi+1e-9))ng.push(i)});ng.sort((a,b)=>a-b);s[5]=ng;s[3]=ng.length?0:1})})}
-/* Rear: thêm 2 điểm M1-M5 (dòng 15) và M3-M6 (dòng 17) có trong bảng spec CMM; mẫu cũ chưa có số liệu → null */
-const ADDD=[{n:'M1-M5_Z_Z',kt:'KT27',r:15,nom:5.4,lo:5.23,hi:5.57,b:16},{n:'M3-M6_Z_Z',kt:'KT27',r:17,nom:5.4,lo:5.23,hi:5.57,b:18}];
-function fixAdd(P){if(!/rear/i.test(P.label))return;ADDD.forEach(a=>{if(P.dims.some(d=>d.r===a.r))return;const bi=P.dims.findIndex(d=>d.r===a.b);if(bi<0)return;const d=Object.assign({},P.dims[bi],{n:a.n,kt:a.kt,r:a.r,nom:a.nom,lo:a.lo,hi:a.hi}),ni=P.dims.length;P.dims.push(d);const g=P.G.find(x=>x.d.includes(bi));if(g)g.d.splice(g.d.indexOf(bi),0,ni)});P.S.forEach(s=>{while(s[6].length<P.dims.length)s[6].push(null)})}
-function fixAll(P){fixAdd(P);fixPos(P);fixInfo(P);fixNom(P);fixTight(P);fixLim(P);fixHide(P)}
+/* Kích thước M (khoảng cách M-M, Z) không phải gia công: không tính NG, không cảnh báo, không vẽ biểu đồ phụ */
+const ISM=d=>/^M\d-M\d/i.test(d.n||'');
+function fixM(P){const ix=new Set();P.dims.forEach((d,i)=>{if(ISM(d)){d.x=1;ix.add(i)}});if(!ix.size)return;P.S.forEach(s=>{if(s[5].some(i=>ix.has(i))){s[5]=s[5].filter(i=>!ix.has(i));s[3]=s[5].length?0:1}})}
+function fixAll(P){fixM(P);fixPos(P);fixInfo(P);fixNom(P);fixTight(P);fixLim(P);fixHide(P)}
 /* Tách tên máy: bỏ đuôi L1/L2, đuôi ST/CT trả riêng (đưa vào mục Ca), tự khớp với các máy đã có */
 function splitMc(raw,known){let t=' '+String(raw==null?'':raw).toUpperCase().replace(/[_\s]+/g,' ')+' ';const night=/ĐÊM|ĐEM|DEM|NIGHT/.test(t);let tail='';
 t=t.replace(/(^|[^A-Z0-9])L\d+(?=$|[^A-Z0-9])/g,'$1 ');
@@ -607,7 +607,7 @@ const hit=g.filter(v=>v!=null).length;
 if(hit<P.dims.length*.8)throw new Error('chỉ khớp '+hit+'/'+P.dims.length+' kích thước — sai mã hàng?');
 const bi={};P.dims.forEach((d,i)=>bi[d.r]=i);
 const cd=P.CD.map(c=>bi[c.r]!=null?g[bi[c.r]]:null),ng=[];
-g.forEach((v,i)=>{const d=P.dims[i];if(v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
+g.forEach((v,i)=>{const d=P.dims[i];if(v!=null&&!d.x&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
 const kn=uniq(ALL.P[k].S.map(s=>s[2])),rm=findMc([R[0][ci.m],f.name],kn),mc=rm.mc?mcFor(k,rm.mc):'?',B=Date.now();
 const dt=new Date(f.lastModified||Date.now()),p2=n=>String(n).padStart(2,'0'),
 dv=$('ud').value||`${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`,ca=$('uc').value||caT(dt.getHours()>=7&&dt.getHours()<19?'Ngày CT':'Đêm CT',rm.tail,rm.night);
@@ -630,7 +630,7 @@ const sp=o=>{const lo=cell(o.r-1,6),hi=cell(o.r-1,7);if(num(lo)&&num(hi)){o.lo=+
 P.dims.forEach(sp);P.CD.forEach(sp);P.CH.forEach(c=>{const a=P.CD[c.s[0]];c.nom=a.nom;c.lo=a.lo;c.hi=a.hi});fixAll(P);
 const rd=x=>num(x)?Math.round(x*1e4)/1e4:null;
 const kn=uniq(ALL.P[k].S.map(s=>s[2])),B=Date.now();
-const nw=cols.map(c=>{const g=P.dims.map(d=>cell(d.r-1,c)),ng=[];g.forEach((v,i)=>{const d=P.dims[i];if(num(v)&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
+const nw=cols.map(c=>{const g=P.dims.map(d=>cell(d.r-1,c)),ng=[];g.forEach((v,i)=>{const d=P.dims[i];if(num(v)&&!d.x&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
 const rm=findMc([cell(2,c)],kn),cb=caN(cell(4,c));
 return [iso(cell(3,c)),caT(cb,rm.tail,rm.night),mcFor(k,rm.mc||mn(cell(2,c))),cell(6,c)==='OK'?1:0,P.CD.map(d=>rd(cell(d.r-1,c))),ng,g.map(rd),B,f.lastModified||B]});
 if(nw.some(s=>!s[0]))throw new Error('có cột không đọc được ngày');
