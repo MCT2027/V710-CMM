@@ -610,7 +610,7 @@ const cd=P.CD.map(c=>bi[c.r]!=null?g[bi[c.r]]:null),ng=[];
 g.forEach((v,i)=>{const d=P.dims[i];if(v!=null&&!d.x&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
 const kn=uniq(ALL.P[k].S.map(s=>s[2])),rm=findMc([R[0][ci.m],f.name],kn),mc=rm.mc?mcFor(k,rm.mc):'?',B=Date.now();
 const dt=new Date(f.lastModified||Date.now()),p2=n=>String(n).padStart(2,'0'),
-dv=$('ud').value||`${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`,ca=$('uc').value||caT(dt.getHours()>=7&&dt.getHours()<19?'Ngày CT':'Đêm CT',rm.tail,rm.night);
+dv=$('ud').value||(d0=>`${d0.getFullYear()}-${p2(d0.getMonth()+1)}-${p2(d0.getDate())}`)(new Date(dt.getTime()-(dt.getHours()<8?864e5:0))),ca=$('uc').value||caT(dt.getHours()>=8&&dt.getHours()<20?'Ngày CT':'Đêm CT',rm.tail,rm.night);
 const key=JSON.stringify(g.length===147?g.slice(0,145):g);let dup=P.S.some(s=>s[2]===mc&&JSON.stringify(s[6].length===147?s[6].slice(0,145):s[6])===key);
 if(!dup){const sm=[dv,ca,mc,ng.length?0:1,cd,ng,g,B,f.lastModified||B];P.S.push(sm);uaNote(k,sm);P.S.sort(sdate)}else uaSkip();
 P.min=P.S[0][0];P.max=P.S[P.S.length-1][0];ALL.P[k]=P;LAST={k,mc};let sv='';
@@ -854,7 +854,10 @@ clSay(CL.st||(CL.repo()?'Kho: '+CL.repo():'Chưa xác định kho (mở link Git
 /* Đẩy lên cloud sau mỗi lần quét thư mục hoặc up file */
 if(typeof fsScan=='function'){const _fs=fsScan;fsScan=async function(m){const r=await _fs(m);clDirty();return r}}
 const _uf=$('uf').onchange;if(_uf)$('uf').onchange=async e=>{await _uf.call($('uf'),e);clDirty()};
-clPull();setInterval(clPull,300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)clPull()});
+let GLT=0;document.addEventListener('pointerdown',()=>{GLT=1},{once:true,capture:true});document.addEventListener('keydown',()=>{GLT=1},{once:true,capture:true});
+function goLatest(){try{let b=null;for(const k in ALL.P)for(const s of ALL.P[k].S){const key=s[0]+'|'+(/^Đêm/.test(s[1])?1:0)+'|'+String(+s[8]||+s[7]||0).padStart(15,'0');if(!b||key>b.key)b={key,k,mc:s[2]}}
+if(!b)return;setP(b.k);if(ALL.P[b.k].S.some(x=>x[2]===b.mc))st.mc=b.mc;stdV();render()}catch(e){}}
+goLatest();clPull().then(()=>{if(!GLT)goLatest()});setInterval(clPull,300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)clPull()});
 
 fsInit();
 </script>
