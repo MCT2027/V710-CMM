@@ -408,10 +408,10 @@ $('fb').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.da
 function dtab(V){const last=V.length?V[V.length-1][0]:'';
 let h='<table class="dt"><thead><tr><th class="s1">Kích thước</th><th>Spec</th>'+V.map(s=>{const w=s[0]===last;return `<th class="${w?'w':''}">${w?'⚠ ':''}${dm(s[0])} <b class="${s[3]?'ok':'ng'}">${s[3]?'OK':'NG'}</b><br>${cs(s[1])}·${s[2]}</th>`}).join('')+'</tr></thead><tbody>';
 ktGroups(DATA).forEach((g,gi)=>{let rw='',nb=0,nw=0;
-g.d.forEach(i=>{const d=DATA.dims[i],c=V.map(s=>s[6][i]),b=c.map(v=>!(g.x||d.x)&&v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9)),w=c.map(v=>!(g.x||d.x)&&lv(v,d.lo,d.hi)==1);if(st.o&&!b.some(x=>x))return;nb+=b.filter(x=>x).length;nw+=w.filter(x=>x).length;
+g.d.forEach(i=>{const d=DATA.dims[i],c=V.map(s=>s[6][i]),b=c.map(v=>!(g.x||d.x)&&v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9)),w=c.map(v=>!(g.x||d.x)&&lv(v,d.lo,d.hi)==1);if(st.o&&!b.some(x=>x))return;nb+=b.filter((x,k)=>x&&V[k][0]===last).length;nw+=w.filter((x,k)=>x&&V[k][0]===last).length;
 const kl=kOnly(d);rw+=`<tr><td class="s1 in">${kl}${kl!==d.n?' <span class="sub">'+d.n+'</span>':''}</td><td class="sp">${d.lo}<br>${d.hi}</td>`+c.map((v,k)=>`<td class="${b[k]?'bad':w[k]?'wn':''}">${v==null?'':v.toFixed(4)}</td>`).join('')+'</tr>'});
 if(!rw)return;const cl=st.cl[gi];
-h+=`<tr class="gh" data-g="${gi}"><td colspan="${V.length+2}"><div>${cl?'▸':'▾'} ${g.t} <span class="sub">(${g.d.length} kích thước${g.x?' · vật liệu, không cảnh báo':''})</span>${nb?` <span class="ng">⚠ ${nb} ô vượt spec</span>`:''}${nw?` <span class="wnc">⚠ ${nw} ô gần cận</span>`:''}</div></td></tr>`+(cl?'':rw)});
+h+=`<tr class="gh" data-g="${gi}"><td colspan="${V.length+2}"><div>${cl?'▸':'▾'} ${g.t} <span class="sub">(${g.d.length} kích thước${g.x?' · vật liệu, không cảnh báo':''})</span>${nb?` <span class="ng">⚠ ${nb} ô vượt spec · ${dm(last)}</span>`:''}${nw?` <span class="wnc">⚠ ${nw} ô gần cận · ${dm(last)}</span>`:''}</div></td></tr>`+(cl?'':rw)});
 return h+'</tbody></table>'}
 /* v15: vẽ thêm biểu đồ cho nhóm kích thước chưa có biểu đồ (bỏ kích thước không có spec); sắp xếp theo mức ổn định */
 const COL2=['#0f9d9a','#c2410c','#7c3aed','#be185d','#4d7c0f','#0369a1','#a16207','#9333ea','#475569','#b91c1c'];
