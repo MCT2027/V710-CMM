@@ -397,18 +397,18 @@ mo:['Tháng',[A,...uniq(S.map(s=>s[0].slice(5,7))).sort().map(x=>['' +x,'T'+ +x]
 const B=(k,o)=>o.map(([v,t])=>`<button data-k="${k}" data-v="${v}" class="${st[k]==v?'on':''}">${t}</button>`).join('');
 const row=k=>`<div class="fg"><span>${G[k][0]}</span><div class="bt">${B(k,G[k][1])}</div></div>`;
 const mcRow=()=>`<div class="fg"><span>Máy</span><div class="bt">${B('mc',G.mc[1])}${mcO2.length?`<span class="mix"><button data-k="mi" class="tg2${st.mi?' on':''}" title="Máy ${IDLE_D} ngày chưa có dữ liệu — bấm để chọn">${st.mi?'▾':'▸'} +${mcO2.length} máy ngưng</button>${st.mi?`<div class="mip">${B('mc',mcO2.map(x=>[x,x]))}</div>`:''}</span>`:''}</div></div>`;
-const dv=st.v=='data',ac=DATA.G.every((_,i)=>st.cl[i]);
+const dv=st.v=='data',ac=ktGroups(DATA).every((_,i)=>st.cl[i]);
 const sum=[st.q?{d:'Ngày mới nhất',w:'Tuần mới nhất',m:'Tháng mới nhất'}[st.q]:'',st.mc||'Tất cả máy',st.ca||'Mọi ca',st.mo?'T'+ +st.mo:'',st.dy?'ngày '+ +st.dy:'',st.n?st.n+' mẫu':'tất cả mẫu'].filter(Boolean).join(' · ');
 const act=(st.ca||st.mo||st.wk||st.dy||st.q||st.n!=14||st.o)?' •':'';
 $('fb').innerHTML=`<div class="fr"><div class="bt sg">${B('p',G.p[0])}</div><div class="bt sg">${B('v',G.v[0])}<button data-k="dwg" title="Xem bản vẽ kiểm tra">🖼<span class="bl"> Bản vẽ</span></button><button class="fsb" data-k="scan" title="Quét lại thư mục chung">🔄<span class="bl"> Quét lại</span></button><button data-k="dl" title="Tải file HTML đã chứa dữ liệu mới về máy">⬇<span class="bl"> Tải về</span></button></div></div>`+`<div class="fr fl">${mcRow()}<div class="fg"><div class="bt"><button data-k="std" class="${st.n==14&&!st.q&&!st.ca&&!st.mo&&!st.wk&&!st.dy?'on':''}" title="Chế độ xem chuẩn: 14 mẫu gần nhất">Chuẩn</button>${B('q',G.q[1])}<button class="tg2${st.fo?' on':''}" data-k="fo" title="${sum}">${st.fo?'▾':'▸'} Mở rộng${act}</button></div></div></div>`+(st.fo?['ca','mo','wk','dy','n'].map(row).join('')+(dv?`<div class="fr"><button data-k="o" data-v="${st.o?0:1}" class="${st.o?'on':''}">⚠ Chỉ vi phạm</button><button data-k="c" data-v="${ac?0:1}">⇕ ${ac?'Mở nhóm':'Thu nhóm'}</button></div>`:''):'');
 $('mcs').innerHTML='<button data-k="up" title="Lên đầu trang">↑</button><span class="lb">Máy</span>'+B('mc',G.mc[1])+(mcO2.length?'<button data-k="mi" title="Máy ngưng">▸ +'+mcO2.length+'</button>':'');
 if($('fb').querySelectorAll)$('fb').querySelectorAll('.fg .bt .on').forEach(b=>{b.parentNode.scrollLeft=Math.max(0,b.offsetLeft-b.parentNode.clientWidth/2)})}
 $('dt').onclick=e=>{const g=e.target.closest('.gh');if(!g)return;const i=g.dataset.g;st.cl[i]=st.cl[i]?0:1;render()};
-$('fb').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(k=='dwg'){dwgOpen();return}if(k=='dl'){const f=$('fst');f.textContent='⬇ Đang tạo file…';exportHtml(0).then(()=>{f.innerHTML='⬇ '+$('uxs').innerHTML});return}if(k=='scan'){if(FSL.length)fsScan(1);else $('fsb').click();return}if(k=='fo'){st.fo=!st.fo;bar();return}if(k=='p'){if(st.p!=b.dataset.v)setP(b.dataset.v);return}if(k=='std'){stdV();render();return}if(k=='mi'){st.mi=!st.mi;bar();return}if(k=='mc'){st.mi=0;st.mc=b.dataset.v;stdV();render();return}if(k=='q'){st.q=st.q==b.dataset.v?'':b.dataset.v;render();return}if(k=='c'){st.cl={};if(+b.dataset.v)DATA.G.forEach((_,i)=>st.cl[i]=1);render();return}st[k]=(k=='n'||k=='o')?+b.dataset.v:b.dataset.v;if(k=='mo'){st.wk='';st.dy=''}if(k=='wk')st.dy='';if(k=='mo'||k=='wk'||k=='dy'||k=='n')st.q='';render()};
+$('fb').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(k=='dwg'){dwgOpen();return}if(k=='dl'){const f=$('fst');f.textContent='⬇ Đang tạo file…';exportHtml(0).then(()=>{f.innerHTML='⬇ '+$('uxs').innerHTML});return}if(k=='scan'){if(FSL.length)fsScan(1);else $('fsb').click();return}if(k=='fo'){st.fo=!st.fo;bar();return}if(k=='p'){if(st.p!=b.dataset.v)setP(b.dataset.v);return}if(k=='std'){stdV();render();return}if(k=='mi'){st.mi=!st.mi;bar();return}if(k=='mc'){st.mi=0;st.mc=b.dataset.v;stdV();render();return}if(k=='q'){st.q=st.q==b.dataset.v?'':b.dataset.v;render();return}if(k=='c'){st.cl={};if(+b.dataset.v)ktGroups(DATA).forEach((_,i)=>st.cl[i]=1);render();return}st[k]=(k=='n'||k=='o')?+b.dataset.v:b.dataset.v;if(k=='mo'){st.wk='';st.dy=''}if(k=='wk')st.dy='';if(k=='mo'||k=='wk'||k=='dy'||k=='n')st.q='';render()};
 function dtab(V){const last=V.length?V[V.length-1][0]:'';
 let h='<table class="dt"><thead><tr><th class="s1">Kích thước</th><th>Spec</th>'+V.map(s=>{const w=s[0]===last;return `<th class="${w?'w':''}">${w?'⚠ ':''}${dm(s[0])} <b class="${s[3]?'ok':'ng'}">${s[3]?'OK':'NG'}</b><br>${cs(s[1])}·${s[2]}</th>`}).join('')+'</tr></thead><tbody>';
-DATA.G.forEach((g,gi)=>{let rw='',nb=0,nw=0;
-g.d.forEach(i=>{const d=DATA.dims[i],c=V.map(s=>s[6][i]),b=c.map(v=>!g.x&&v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9)),w=c.map(v=>!g.x&&lv(v,d.lo,d.hi)==1);if(st.o&&!b.some(x=>x))return;nb+=b.filter(x=>x).length;nw+=w.filter(x=>x).length;
+ktGroups(DATA).forEach((g,gi)=>{let rw='',nb=0,nw=0;
+g.d.forEach(i=>{const d=DATA.dims[i],c=V.map(s=>s[6][i]),b=c.map(v=>!(g.x||d.x)&&v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9)),w=c.map(v=>!(g.x||d.x)&&lv(v,d.lo,d.hi)==1);if(st.o&&!b.some(x=>x))return;nb+=b.filter(x=>x).length;nw+=w.filter(x=>x).length;
 const kl=sLbl(d);rw+=`<tr><td class="s1 in">${kl}${kl!==d.n?' <span class="sub">'+d.n+'</span>':''}</td><td class="sp">${d.lo}<br>${d.hi}</td>`+c.map((v,k)=>`<td class="${b[k]?'bad':w[k]?'wn':''}">${v==null?'':v.toFixed(4)}</td>`).join('')+'</tr>'});
 if(!rw)return;const cl=st.cl[gi];
 h+=`<tr class="gh" data-g="${gi}"><td colspan="${V.length+2}"><div>${cl?'▸':'▾'} ${g.t} <span class="sub">(${g.d.length} kích thước${g.x?' · vật liệu, không cảnh báo':''})</span>${nb?` <span class="ng">⚠ ${nb} ô vượt spec</span>`:''}${nw?` <span class="wnc">⚠ ${nw} ô gần cận</span>`:''}</div></td></tr>`+(cl?'':rw)});
@@ -585,6 +585,17 @@ const tg=/thu hẹp/.test(c.t||'');let nom=c.nom;const x=T[rs[0]];
 if(x&&!tg&&Math.abs(x[2]-c.lo)<1e-6&&Math.abs(x[3]-c.hi)<1e-6&&rs.every(r=>{const y=T[r];return y&&y[1]===x[1]&&y[2]===x[2]&&y[3]===x[3]}))nom=x[1];
 const sp=n4(nom)+' '+tolTxt(nom,c.lo,c.hi)+(tg?' · spec thu hẹp '+TIGHT_D:'');
 return base.length?base.join(' / ')+' · '+sp:String(fb||c.t||'').replace(/\s*·\s*spec thu hẹp.*$/,'')+' · '+sp}
+/* v3.7: nhóm dữ liệu theo KT (KT1, KT2, … đến hết); kích thước chưa có KT để cuối theo nhóm cũ */
+const KTG=new WeakMap(),ktNum=s=>(s.match(/\d+/g)||[]).map(Number),ktCmp=(a,b)=>{const x=ktNum(a),y=ktNum(b),z0=v=>v[0]===0?1:0;if(z0(x)!=z0(y))return z0(x)-z0(y);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]??-1)-(y[i]??-1);if(d)return d}return a.localeCompare(b)};
+function ktGroups(P){let g=KTG.get(P.dims);if(g)return g;const M=ktMap(P),T=KTF[pkOf(P)]||{},by={},bc={};
+P.dims.forEach((d,i)=>{const k=M[d.r];if(!k)return;const b=k.replace(/\.\d+$/,'');(bc[b]=bc[b]||new Set()).add(k)});
+P.dims.forEach((d,i)=>{const k=M[d.r];if(!k)return;let b=k.replace(/\.\d+$/,'');if(bc[b].size==1&&b!==k&&!P.dims.some(e=>M[e.r]===b))b=k;(by[b]=by[b]||[]).push(i)});
+const used=new Set();g=Object.keys(by).sort(ktCmp).map(b=>{const ix=by[b].sort((x,y)=>ktCmp(M[P.dims[x].r],M[P.dims[y].r])||P.dims[x].r-P.dims[y].r);ix.forEach(i=>used.add(i));
+const d0=P.dims[ix[0]],same=ix.every(i=>{const d=P.dims[i];return d.lo===d0.lo&&d.hi===d0.hi}),x=T[d0.r];let nom=d0.nom;if(x&&x[2]===d0.lo&&x[3]===d0.hi)nom=x[1];
+return {t:b+(same?' · '+n4(nom)+' '+tolTxt(nom,d0.lo,d0.hi):''),d:ix,x:ix.every(i=>P.dims[i].x)?1:0}});
+P.G.forEach(o=>{const ix=o.d.filter(i=>!used.has(i));if(ix.length){ix.forEach(i=>used.add(i));g.push({t:o.t+' (chưa có KT)',d:ix,x:o.x})}});
+const rest=P.dims.map((_,i)=>i).filter(i=>!used.has(i));if(rest.length)g.push({t:'Khác (chưa có KT)',d:rest,x:0});
+KTG.set(P.dims,g);return g}
 const chT=c=>ktHead(c.s.map(p=>CD[p]&&CD[p].r),c),xT=c=>ktHead(c.ix.map(i=>DATA.dims[i].r),c,c.g);
 /* Tách tên máy: bỏ đuôi L1/L2, đuôi ST/CT trả riêng (đưa vào mục Ca), tự khớp với các máy đã có */
 function splitMc(raw,known){let t=' '+String(raw==null?'':raw).toUpperCase().replace(/[_\s]+/g,' ')+' ';const night=/ĐÊM|ĐEM|DEM|NIGHT/.test(t);let tail='';
