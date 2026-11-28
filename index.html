@@ -576,7 +576,11 @@ const cg=new Set();P.dims.forEach((d,i)=>{const x=T[d.r];if(x){d.kt=x[0];if(ap(d
 P.CH.forEach(c=>{if(/thu hẹp/.test(c.t))return;const a=P.CD[c.s[0]];if(a&&ch.has(c.s[0])){c.nom=a.nom;c.lo=a.lo;c.hi=a.hi}});
 /* chỉ tính lại OK/NG cho kích thước có dung sai thay đổi; còn lại giữ kết luận gốc */
 if(cg.size)P.S.forEach(s=>{const ng=s[5].filter(i=>!cg.has(i));cg.forEach(i=>{const d=P.dims[i],v=s[6][i];if(!d.x&&v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});ng.sort((a,b)=>a-b);s[5]=ng;s[3]=ng.length?0:1})}
-function fixAll(P){fixKT(P);fixPos(P);fixInfo(P);fixNom(P);fixTight(P);fixHide(P)}
+/* sửa mẫu TXT đã nạp theo quy tắc cũ: ca đêm, file lưu trước 07:00 mà vẫn ghi ngày của file → lùi về ngày hôm trước (chỉ mẫu nạp riêng lẻ từ 1 file) */
+function fixShift(P){const c={};P.S.forEach(s=>{if(s[7])c[s[7]]=(c[s[7]]||0)+1});let n=0;const p2=v=>String(v).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+P.S.forEach(s=>{if(s[9]||!s[8]||c[s[7]]!==1||!/^Đêm/.test(s[1]))return;const d=new Date(+s[8]);if(d.getHours()<7&&s[0]===ymd(d)){s[0]=ymd(new Date(d.getFullYear(),d.getMonth(),d.getDate()-1));s[9]='t';n++}});
+if(n){P.S.sort(sdate);P.min=P.S[0][0];P.max=P.S[P.S.length-1][0]}return n}
+function fixAll(P){fixShift(P);fixKT(P);fixPos(P);fixInfo(P);fixNom(P);fixTight(P);fixHide(P)}
 const KTM=new WeakMap(),ktMap=P=>{let m=KTM.get(P.dims);if(!m){m={};P.dims.forEach(d=>{const k=ktN(d.kt);if(/^KT/i.test(k)&&!(d.r in m))m[d.r]=k});KTM.set(P.dims,m)}return m};
 const KTC=new WeakMap(),ktCnt=P=>{let c=KTC.get(P.dims);if(!c){c={};const M=ktMap(P);P.dims.forEach(d=>{const k=M[d.r];if(k)c[k]=(c[k]||0)+1});KTC.set(P.dims,c)}return c};
 const kOnly=o=>o?(ktMap(DATA)[o.r]||o.n):'',sLbl=o=>{const k=kOnly(o);return o&&k!==o.n&&ktCnt(DATA)[k]>1?k+' · '+String(o.n).replace(/\s*\(dòng \d+\)$/,''):k};
@@ -629,9 +633,11 @@ const cd=P.CD.map(c=>bi[c.r]!=null?g[bi[c.r]]:null),ng=[];
 g.forEach((v,i)=>{const d=P.dims[i];if(v!=null&&(v<d.lo-1e-9||v>d.hi+1e-9))ng.push(i)});
 const kn=uniq(ALL.P[k].S.map(s=>s[2])),rm=findMc([R[0][ci.m],f.name],kn),mc=rm.mc?mcFor(k,rm.mc):'?',B=Date.now();
 const dt=new Date(f.lastModified||Date.now()),p2=n=>String(n).padStart(2,'0'),
-dv=$('ud').value||`${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`,ca=$('uc').value||caT(dt.getHours()>=7&&dt.getHours()<19?'Ngày CT':'Đêm CT',rm.tail,rm.night);
+hh=dt.getHours(),ca=$('uc').value||caT(hh>=7&&hh<19?'Ngày CT':'Đêm CT',rm.tail,rm.night),
+/* ca đêm 19:00 → 07:00 hôm sau: file lưu trước 07:00 thuộc ca đêm của ngày hôm trước */
+dd=(/^Đêm/.test(ca)&&hh<7)?new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()-1):dt,dv=$('ud').value||`${dd.getFullYear()}-${p2(dd.getMonth()+1)}-${p2(dd.getDate())}`;
 const key=JSON.stringify(g);let dup=P.S.some(s=>s[2]===mc&&JSON.stringify(s[6])===key);
-if(!dup){const sm=[dv,ca,mc,ng.length?0:1,cd,ng,g,B,f.lastModified||B];P.S.push(sm);uaNote(k,sm);P.S.sort(sdate)}else uaSkip();
+if(!dup){const sm=[dv,ca,mc,ng.length?0:1,cd,ng,g,B,f.lastModified||B,'t'];P.S.push(sm);uaNote(k,sm);P.S.sort(sdate)}else uaSkip();
 P.min=P.S[0][0];P.max=P.S[P.S.length-1][0];ALL.P[k]=P;LAST={k,mc};let sv='';
 if(stoP(k,P)){try{localStorage.setItem('v710_'+ALL.ver+'_last',JSON.stringify(LAST))}catch(e){}}else{sv=' (không lưu được trên thiết bị — bộ nhớ trình duyệt đầy)';SVERR=1}
 return dup?`${P.label}: mẫu máy ${mc} này đã có trong dữ liệu, không thêm lại`:`${P.label}: thêm 1 mẫu máy ${mc}${rm.tail?' (đuôi '+rm.tail+' → ca)':''} · ${dm(dv)} · ${ca} · ${ng.length?'NG ('+ng.length+' kích thước vượt spec)':'OK'} · khớp ${hit}/${P.dims.length}${sv}`}
