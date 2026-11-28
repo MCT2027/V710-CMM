@@ -787,7 +787,9 @@ $('fsn').onclick=async e=>{const a=e.target.closest('a[data-fx]');if(!a)return;e
 let FTM=0;window.fsTimer=()=>{if(!FTM)FTM=setInterval(()=>{if(!document.hidden)fsScan(0)},3e5)};fsUi();
 try{FSL=await idb('get','dirs')||[];if(!FSL.length){const o=await idb('get','dir');if(o)FSL=[o]}}catch(e){FSL=[]}
 fsUi();if(FSL.length){fsScan(0);fsTimer()}}
-function setP(k){st.p=k;st.mi=0;Object.keys(tv).forEach(x=>delete tv[x]);document.querySelectorAll('#dc .vb').forEach(b=>b.classList.remove('on'));$('box').style.display='';$('box_t').style.display='none';$('c_trend').parentNode.style.display='';$('trend_t').style.display='none';DATA=ALL.P[k];S=DATA.S;CD=DATA.CD;st.mc=DATA.def;st.mo='';st.wk='';st.dy='';st.ca='';st.q='';st.n=14;st.cl={};Object.values(ch).forEach(c=>c.destroy());
+/* máy mặc định khi chuyển Rear/Front: máy có mẫu mới nhất (bỏ máy đã ngưng); không có thì dùng máy mặc định cũ */
+function pickMc(){const ID=idleOf(S);for(let i=S.length-1;i>=0;i--)if(!ID.has(S[i][2]))return S[i][2];return S.length?S[S.length-1][2]:DATA.def}
+function setP(k){st.p=k;st.mi=0;Object.keys(tv).forEach(x=>delete tv[x]);document.querySelectorAll('#dc .vb').forEach(b=>b.classList.remove('on'));$('box').style.display='';$('box_t').style.display='none';$('c_trend').parentNode.style.display='';$('trend_t').style.display='none';DATA=ALL.P[k];S=DATA.S;CD=DATA.CD;st.mc=pickMc();st.mo='';st.wk='';st.dy='';st.ca='';st.q='';st.n=14;st.cl={};Object.values(ch).forEach(c=>c.destroy());
 $('h1').textContent='Báo cáo kiểm tra '+DATA.label+(DATA.max?' T'+ +DATA.max.slice(5,7):'');document.title=$('h1').textContent;
 setGen();
 $('cg').innerHTML=DATA.CH.map((c,i)=>`<div class="card${c.s.length>=6?' big':''}${/Ø/.test(c.t)?' hole':''}" style="--n:${c.s.length}"><h2 class="hb"><span>${chT(c)}</span><button class="vb" data-i="${i}" title="Chuyển biểu đồ / dữ liệu">▤</button></h2><div class="cv"><canvas id="ch${i}"></canvas></div><div class="tb" style="display:none"></div></div>`).join('');render();ust()}
