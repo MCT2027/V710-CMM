@@ -338,7 +338,7 @@ em.cpk{font-style:normal;font-size:10px;font-weight:600;margin:0 auto 0 8px;opac
 <header class="hd3">
 <div class="t"><h1 id="h1">Báo cáo kiểm tra V710 Front T10</h1><div class="dy" id="hday"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"></rect><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"></path></svg><span>Ngày xem dữ liệu <b>29/10</b></span></div></div>
 <div class="ps" id="hps"><div class="pr on" data-p="front" role="button" tabindex="0" aria-pressed="true" title="Xem Front"><span class="pn">Front<small>6 máy</small></span><span class="pbar" aria-hidden="true"><i class="o" style="flex:3"></i><i class="n" style="flex:3"></i></span><span class="ct"><b class="ok">3</b>OK<b class="ng">3</b>NG</span><span class="tg">Máy NG <em>6</em><em>6-1</em><em>7</em></span></div><div class="pr" data-p="rear" role="button" tabindex="0" aria-pressed="false" title="Xem Rear"><span class="pn">Rear<small>6 máy</small></span><span class="pbar" aria-hidden="true"><i class="o" style="flex:3"></i><i class="n" style="flex:3"></i></span><span class="ct"><b class="ok">3</b>OK<b class="ng">3</b>NG</span><span class="tg">Máy NG <em>1-1</em><em>7-1</em><em>13</em></span></div></div>
-<div class="u"><div id="gen"></div><div class="sub" id="fst" style="">⬇ Đang tạo file…</div></div>
+<div class="u"><div id="gen"></div><div class="sub" id="fst"></div></div>
 </header>
 <div class="upl on" id="upl"><span class="ul">Lần nhập <b>18:07 29/10</b></span><span class="ms"><b class="ng">Front 26</b><b class="ok">Front 6</b><b class="ok">Rear 13</b><b class="ok">Rear 40</b></span></div>
 <div class="sub" id="ulog" style="display:none;margin:4px 0;line-height:1.7"></div>
@@ -355,12 +355,15 @@ em.cpk{font-style:normal;font-size:10px;font-weight:600;margin:0 auto 0 8px;opac
 <div class="cg" id="cg"></div>
 <div class="card" id="dt" style="display:none"></div>
 <div class="sub" id="note" style="font-size:11px"></div>
-<details id="up"><summary>Cập nhật dữ liệu</summary><div class="upb"><span>Chọn file Data_check_time_* (.xlsm, .xlsx, .xls, .xlsb, .csv, .txt — Rear hoặc Front). Dữ liệu được lưu trên thiết bị này; mỗi máy tính cần tự kết nối thư mục chung một lần. Dữ liệu cập nhật bằng nút tải file không tự đồng bộ sang máy khác.</span>
+<details id="up"><summary>Cập nhật dữ liệu</summary><div class="upb"><span>Chọn file Data_check_time_* (.xlsm, .xlsx, .xls, .xlsb, .csv, .txt — Rear hoặc Front). Dữ liệu được lưu trên thiết bị này; mỗi máy tính cần tự kết nối thư mục chung một lần. Máy đã cài <b>Đồng bộ GitHub</b> sẽ tự đẩy dữ liệu mới lên để mọi người mở link đều thấy.</span>
 <div class="fr" style="margin:6px 0;align-items:center"><span>File .txt từ CMM (không có ngày/ca):</span><label>Ngày <input type="date" id="ud"></label><label>Ca <select id="uc"><option value="">Tự động</option><option>Ngày CT</option><option>Đêm CT</option><option>ST</option><option>Đêm ST</option></select></label></div>
 <div class="sub" style="margin:4px 0">Tên máy tự nhận từ cột partnb / tên file / ô tên máy và khớp với máy đã có; đuôi L1, L2 được bỏ; đuôi ST, CT được đưa vào mục <b>Ca</b> (phần Mở rộng).</div>
 <input type="file" id="uf" accept=".xlsm,.xlsx,.xls,.xlsb,.csv,.txt,.tsv" multiple=""><div id="us"></div><button id="udel" style="color:var(--ng);font-weight:600" title="Xóa toàn bộ dữ liệu (cả dữ liệu gốc và dữ liệu đã cập nhật) để nạp lại từ đầu">🗑 Xóa toàn bộ dữ liệu</button>
-<div class="fr" style="margin:8px 0 2px;align-items:center"><button id="ush" class="on" style="" title="Mở menu chia sẻ của điện thoại, chọn Zalo">📤 Gửi Zalo</button><button id="ux" title="Tải file HTML đã chứa dữ liệu mới về máy">⬇ Tải file về</button><span class="sub" id="uxs">Đang tạo file…</span></div>
+<div class="fr" style="margin:8px 0 2px;align-items:center"><button id="ush" class="on" style="" title="Mở menu chia sẻ của điện thoại, chọn Zalo">📤 Gửi Zalo</button><button id="ux" title="Tải file HTML đã chứa dữ liệu mới về máy">⬇ Tải file về</button><span class="sub" id="uxs"></span></div>
 <div class="fr" id="fsw" style="margin: 8px 0px; align-items: center;"><button id="fsb" title="Chọn thư mục chứa dữ liệu. Có thể chọn nhiều thư mục khác nhau (bấm thêm lần nữa), trang sẽ quét tất cả các thư mục này">📁 Chọn thư mục</button><input type="file" id="ufd" webkitdirectory multiple hidden><button id="fsr" style="">🔄 Quét ngay</button><button id="fsx" style="">✕ Bỏ kết nối</button><button id="fsbell" style="" title="Cho phép Edge hiện thông báo khi có dữ liệu mới">🔔 Bật thông báo</button><span class="sub" id="fsn">Đang theo dõi thư mục “4. V710” — tự quét khi mở trang và mỗi 5 phút (file sửa trong 14 ngày gần nhất).</span></div>
+<div class="fr" id="ghw" style="margin:8px 0;align-items:center;gap:6px;flex-wrap:wrap"><b>☁ Dữ liệu chung (GitHub)</b><span class="sub" id="ghs"></span><button id="ghnow" title="Lấy dữ liệu chung mới nhất, và đẩy dữ liệu của máy này lên nếu đã cài token">⇅ Đồng bộ ngay</button><button id="ghset" title="Cài đặt cho máy nạp dữ liệu">⚙ Cài đặt đẩy dữ liệu</button></div>
+<div id="ghf" style="display:none;margin:4px 0 8px;padding:8px;border:1px solid var(--bd);border-radius:8px"><div class="sub" style="margin-bottom:6px">Chỉ cài trên máy nạp dữ liệu (máy quét thư mục chung). Token được lưu trong trình duyệt của máy này, không nằm trong file báo cáo. Tạo token tại GitHub → Settings → Developer settings → Fine-grained tokens: chỉ chọn repo này, quyền <b>Contents: Read and write</b>.</div>
+<div class="fr" style="gap:6px;align-items:center;flex-wrap:wrap"><label>Tài khoản <input id="gho" size="12"></label><label>Repo <input id="ghr" size="14"></label><label>Nhánh <input id="ghb" size="6" value="main"></label><label>Token <input id="ght" type="password" size="28" autocomplete="off"></label><button id="ghsave">Lưu &amp; đẩy thử</button><button id="ghdel">Xóa token</button></div><div class="sub" id="ghm" style="margin-top:4px"></div></div>
 <details id="ed"><summary>✎ Chỉnh sửa dữ liệu (nếu up sai)</summary><div id="edb"></div></details></div></details>
 </main>
 <div id="dwo" class=""><div class="dh"><b id="dwt"></b><button id="dz_o" title="Thu nhỏ">−</button><button id="dz_i" title="Phóng to">+</button><button id="dz_f" title="Vừa khung">⤢</button><button id="dz_x" title="Đóng (Esc)">✕</button></div><div id="dwv"><img id="dwi" alt="Bản vẽ"></div></div>
@@ -715,7 +718,7 @@ const p2x=n=>String(n).padStart(2,'0');
 async function buildHtml(){let src='';
 try{const r=await fetch(location.href);if(r.ok)src=await r.text()}catch(e){}
 if(!src||src.indexOf('const ALL=/*D*/')<0){const c=document.documentElement.cloneNode(true);
-['fb','sm','al','cg','dt','edb','us','note','gen','dw','nom','tol','box','box_t','trend_t'].forEach(id=>{const e=c.querySelector('#'+id);if(e)e.innerHTML=''});
+['fb','sm','al','cg','dt','edb','us','note','gen','dw','nom','tol','box','box_t','trend_t','fst','uxs','ghs','ghm','fsn'].forEach(id=>{const e=c.querySelector('#'+id);if(e)e.innerHTML=''});
 c.querySelectorAll('details').forEach(d=>d.removeAttribute('open'));c.querySelectorAll('script[src*="xlsx"]').forEach(e=>e.remove());
 const dc=c.querySelector('#dc');if(dc){dc.className='card';dc.querySelectorAll('canvas').forEach(e=>{e.removeAttribute('width');e.removeAttribute('height');e.removeAttribute('style')})}
 const w=c.querySelector('#dwo');if(w)w.className='';const b=c.querySelector('body');if(b)b.removeAttribute('style');
@@ -828,6 +831,53 @@ setTimeout(()=>col(true),9000);let sc=0;addEventListener('scroll',()=>{if(!NC&&!
 m.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.k=='up'){scrollTo({top:0,behavior:'smooth'});return}if(b.dataset.k=='mi'){scrollTo({top:0,behavior:'smooth'});st.mi=1;bar();return}
 const t=$('fb').querySelector('button[data-k="mc"][data-v="'+b.dataset.v+'"]');if(t)t.click();setTimeout(show,50)};
 if(window.IntersectionObserver)new IntersectionObserver(([e])=>{const on=!e.isIntersecting&&e.boundingClientRect.bottom<0;document.body.classList.toggle('mcs',on);if(on)show()}).observe($('fb'))})();
+/* ===== v3.7: Dữ liệu chung qua GitHub (data.json trong repo GitHub Pages) =====
+   - Mọi máy mở link: tự lấy data.json khi mở trang và mỗi 3 phút, gộp vào dữ liệu đang xem.
+   - Máy nạp dữ liệu có token: sau mỗi lần nạp / sửa / xóa, tự gộp với bản trên GitHub rồi đẩy lên. */
+const GH_FILE='data.json';let GHAT=0,GHT=0,GHB=0;
+const ghCfg=()=>{try{return JSON.parse(localStorage.getItem('v710_gh')||'null')}catch(e){return null}};
+const ghGuess=()=>{const m=location.hostname.match(/^([^.]+)\.github\.io$/i),seg=location.pathname.split('/').filter(Boolean)[0];return m?{o:m[1],r:seg&&!/\.html?$/i.test(seg)?seg:m[1]+'.github.io'}:{o:'',r:''}};
+const ghTm=t=>{const d=new Date(t),p=n=>String(n).padStart(2,'0');return p(d.getHours())+':'+p(d.getMinutes())+' '+p(d.getDate())+'/'+p(d.getMonth()+1)};
+const ghSt=h=>{const e=$('ghs');if(e)e.innerHTML=h};
+const b64=s=>{const u=new TextEncoder().encode(s);let b='';for(let i=0;i<u.length;i+=0x8000)b+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(b)};
+function deltaOf(k){const P=ALL.P[k],B=BASEM[k]||new Map();return {S:P.wipe?P.S:P.S.filter(s=>B.get(sk(s))!==s[0]+'|'+s[1]),del:P.del||[],wipe:P.wipe?1:0}}
+function mergeIn(k,o){if(!o||!Array.isArray(o.S)||!ALL.P[k])return 0;const P=ALL.P[k],dl=new Set([...(P.del||[]),...(o.del||[])]),h=new Map();let n=0;
+P.S.forEach(s=>{const q=sk(s);if(!dl.has(q))h.set(q,s);else n++});
+o.S.forEach(s=>{if(!Array.isArray(s)||s.length<7)return;s=JSON.parse(JSON.stringify(s));s[2]=mn(s[2]);const q=sk(s);if(dl.has(q)||h.has(q))return;h.set(q,s);n++});
+if(o.wipe&&!P.wipe){const keep=new Set(o.S.map(sk));for(const [q] of h)if(BASEK[k].has(q)&&!keep.has(q)){h.delete(q);n++}P.wipe=1}
+if(!n&&dl.size===(P.del||[]).length)return 0;P.S=[...h.values()];P.del=[...dl];mcFix(P.S);fixAll(P);P.S.sort(sdate);P.min=P.S.length?P.S[0][0]:'';P.max=P.S.length?P.S[P.S.length-1][0]:'';return n}
+function ghRedraw(){const k=st.p,mc=st.mc,v=st.v;setP(k);if(mc&&S.some(x=>x[2]===mc))st.mc=mc;st.v=v;render();ust()}
+async function ghPull(force){if(!/^https?:$/.test(location.protocol))return 0;try{const r=await fetch(GH_FILE+'?t='+Date.now(),{cache:'no-store'});if(!r.ok){if(r.status==404)ghSt('chưa có dữ liệu chung');return 0}
+const o=await r.json();if(!o||!o.P)return 0;if(!force&&o.at&&o.at<=GHAT){ghSt('đã có bản mới nhất · '+ghTm(o.at));return 0}GHAT=o.at||Date.now();let n=0;for(const k in o.P)n+=mergeIn(k,o.P[k]);
+if(n){for(const k in ALL.P)persist(k);ghRedraw()}ghSt('bản chung lúc <b>'+ghTm(GHAT)+'</b>'+(o.by?' ('+fsEsc(o.by)+')':'')+(n?' · thêm '+n+' thay đổi':''));return n}catch(e){ghSt('<span class="ng">không đọc được dữ liệu chung</span>');return 0}}
+async function ghPush(){const c=ghCfg();if(!c||!c.t||!c.o||!c.r||GHB)return 0;GHB=1;const m=$('ghm');ghSt('đang đẩy dữ liệu lên GitHub…');
+const api='https://api.github.com/repos/'+encodeURIComponent(c.o)+'/'+encodeURIComponent(c.r)+'/contents/'+GH_FILE,H={Authorization:'Bearer '+c.t,'X-GitHub-Api-Version':'2022-11-28'},br=c.b||'main';
+try{for(let a=0;a<4;a++){let sha=null,rem=null;const g=await fetch(api+'?ref='+encodeURIComponent(br)+'&t='+Date.now(),{headers:Object.assign({Accept:'application/vnd.github+json'},H),cache:'no-store'});
+if(g.status===200){sha=(await g.json()).sha;const rw=await fetch(api+'?ref='+encodeURIComponent(br)+'&t='+Date.now(),{headers:Object.assign({Accept:'application/vnd.github.raw+json'},H),cache:'no-store'});if(rw.ok){try{rem=JSON.parse(await rw.text())}catch(e){}}}
+else if(g.status===401||g.status===403)throw new Error('token sai, hết hạn hoặc thiếu quyền Contents: Read and write ('+g.status+')');
+else if(g.status===404){const rp=await fetch('https://api.github.com/repos/'+encodeURIComponent(c.o)+'/'+encodeURIComponent(c.r),{headers:Object.assign({Accept:'application/vnd.github+json'},H)});if(!rp.ok)throw new Error('không thấy repo '+c.o+'/'+c.r+' (hoặc token không được cấp quyền repo này)')}
+else throw new Error('GitHub trả lỗi '+g.status);
+let n=0;if(rem&&rem.P)for(const k in rem.P)n+=mergeIn(k,rem.P[k]);if(n){for(const k in ALL.P)persist(k);ghRedraw()}
+const o={v:1,at:Date.now(),by:c.n||'',P:{}};for(const k in ALL.P)o.P[k]=deltaOf(k);
+const body={message:'Cập nhật dữ liệu CMM '+ghTm(o.at),content:b64(JSON.stringify(o)),branch:br};if(sha)body.sha=sha;
+const p=await fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json',Accept:'application/vnd.github+json'},H),body:JSON.stringify(body)});
+if(p.ok){GHAT=o.at;const ns=Object.values(o.P).reduce((x,y)=>x+y.S.length,0);ghSt('✓ đã đẩy lên lúc <b>'+ghTm(o.at)+'</b> · '+ns+' mẫu mới so với file gốc · máy khác thấy sau khoảng 1–2 phút');if(m)m.textContent='';GHB=0;return 1}
+if(p.status===409||p.status===422){await new Promise(r=>setTimeout(r,800+a*700));continue}
+if(p.status===401||p.status===403)throw new Error('token không có quyền ghi ('+p.status+')');throw new Error('GitHub trả lỗi '+p.status)}throw new Error('xung đột ghi nhiều lần, thử lại sau')}
+catch(e){ghSt('<span class="ng">✗ chưa đẩy được: '+fsEsc(e.message)+'</span>');if(m)m.textContent='✗ '+e.message}GHB=0;return 0}
+const ghQueue=()=>{const c=ghCfg();if(!c||!c.t)return;clearTimeout(GHT);GHT=setTimeout(ghPush,2500)};
+/* đẩy sau mỗi lần nạp (file / thư mục), sửa, xóa */
+const _uaLog=uaLog;uaLog=function(src){const has=UA&&UA.s.length;_uaLog(src);if(has)ghQueue()};
+const _edDone=edDone;edDone=function(k,msg){_edDone(k,msg);ghQueue()};
+$('udel').addEventListener('click',()=>setTimeout(()=>{if(Object.values(ALL.P).every(P=>P.wipe))ghQueue()},50));
+function ghUi(){const c=ghCfg()||{},g=ghGuess();$('gho').value=c.o||g.o;$('ghr').value=c.r||g.r;$('ghb').value=c.b||'main';$('ght').value='';$('ght').placeholder=c.t?'đã lưu token (nhập để thay)':'github_pat_…';$('ghset').textContent=c.t?'⚙ Đẩy dữ liệu: đang bật':'⚙ Cài đặt đẩy dữ liệu';$('ghdel').style.display=c.t?'':'none'}
+$('ghset').onclick=()=>{const f=$('ghf');f.style.display=f.style.display=='none'?'':'none';ghUi()};
+$('ghsave').onclick=async()=>{const c=ghCfg()||{},t=$('ght').value.trim(),n={o:$('gho').value.trim(),r:$('ghr').value.trim(),b:$('ghb').value.trim()||'main',t:t||c.t||'',n:c.n||''};if(!n.o||!n.r||!n.t){$('ghm').textContent='Cần nhập đủ tài khoản, repo và token.';return}
+try{localStorage.setItem('v710_gh',JSON.stringify(n))}catch(e){$('ghm').textContent='Không lưu được trên trình duyệt này.';return}ghUi();$('ghm').textContent='Đang đẩy thử…';if(await ghPush())$('ghm').textContent='✓ Đã kết nối. Từ giờ máy này tự đẩy dữ liệu sau mỗi lần nạp.'};
+$('ghdel').onclick=()=>{try{localStorage.removeItem('v710_gh')}catch(e){}ghUi();$('ghm').textContent='Đã xóa token khỏi máy này.'};
+$('ghnow').onclick=async()=>{await ghPull(1);if(ghCfg()&&ghCfg().t)await ghPush()};
+if(/^https?:$/.test(location.protocol)){ghPull(0);setInterval(()=>{if(!document.hidden&&!GHB)ghPull(0)},18e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!GHB)ghPull(0)})}
+else ghSt('chỉ hoạt động khi mở qua link GitHub Pages');
 fsInit();
 </script>
 
